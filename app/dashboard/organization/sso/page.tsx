@@ -1,13 +1,14 @@
-import { appClient, managementClient } from "@/lib/auth0"
+import { managementClient } from "@/lib/auth0"
+import { getCurrentOrgId } from "@/lib/get-current-org"
 import { PageHeader } from "@/components/page-header"
 
 import { ConnectionsList } from "./connections-list"
 
 export default async function SSO() {
-  const session = await appClient.getSession()
+  const currentOrgId = await getCurrentOrgId()
   const { data: connections } =
     await managementClient.organizations.getEnabledConnections({
-      id: session!.user.org_id!,
+      id: currentOrgId,
     })
 
   return (

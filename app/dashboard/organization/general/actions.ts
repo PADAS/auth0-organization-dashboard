@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache"
 import { SessionData } from "@auth0/nextjs-auth0/types"
 
 import { managementClient } from "@/lib/auth0"
+import { getOrgIdFromSession } from "@/lib/get-current-org"
 import { withServerActionAuth } from "@/lib/with-server-action-auth"
 
 export const updateDisplayName = withServerActionAuth(
@@ -17,9 +18,10 @@ export const updateDisplayName = withServerActionAuth(
     }
 
     try {
+      const orgId = await getOrgIdFromSession(session)
       await managementClient.organizations.update(
         {
-          id: session.user.org_id!,
+          id: orgId,
         },
         {
           display_name: displayName,

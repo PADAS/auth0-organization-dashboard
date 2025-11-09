@@ -1,12 +1,14 @@
-import { appClient, managementClient } from "@/lib/auth0"
+import { managementClient } from "@/lib/auth0"
+import { getCurrentOrgId } from "@/lib/get-current-org"
 import { PageHeader } from "@/components/page-header"
 
 import { DisplayNameForm } from "./display-name-form"
 
 export default async function GeneralSettings() {
-  const session = await appClient.getSession()
+  const currentOrgId = await getCurrentOrgId()
+
   const { data: org } = await managementClient.organizations.get({
-    id: session!.user.org_id!,
+    id: currentOrgId,
   })
 
   return (
