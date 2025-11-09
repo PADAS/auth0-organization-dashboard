@@ -45,7 +45,12 @@ export function OrganizationSwitcher({
   const [open, setOpen] = useState(false)
   const router = useRouter()
 
-  const organization = organizations.find((org) => org.id === currentOrgId)!
+  const organization = organizations.find((org) => org.id === currentOrgId)
+
+  // Fallback if organization not found (shouldn't happen, but safety check)
+  if (!organization) {
+    return null
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -62,11 +67,11 @@ export function OrganizationSwitcher({
         >
           <Avatar className="mr-2 size-8 rounded-sm">
             <AvatarImage
-              src={organization.logoUrl}
+              src={organization.logoUrl || undefined}
               alt={organization.displayName}
             />
             <AvatarFallback className="rounded-sm">
-              {organization.displayName[0].toUpperCase()}
+              {organization.displayName[0]?.toUpperCase() || 'O'}
             </AvatarFallback>
           </Avatar>
           <span className="min-w-16 truncate text-left">
@@ -94,9 +99,9 @@ export function OrganizationSwitcher({
                   className="text-sm"
                 >
                   <Avatar className="mr-2 size-8 rounded-sm">
-                    <AvatarImage src={org.logoUrl} alt={org.displayName} />
+                    <AvatarImage src={org.logoUrl || undefined} alt={org.displayName} />
                     <AvatarFallback className="rounded-sm">
-                      {org.displayName[0].toUpperCase()}
+                      {org.displayName[0]?.toUpperCase() || 'O'}
                     </AvatarFallback>
                   </Avatar>
                   <span className="truncate">{org.displayName}</span>

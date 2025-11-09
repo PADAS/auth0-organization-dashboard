@@ -31,6 +31,15 @@ export default async function DashboardLayout({
     redirect("/onboarding/create")
   }
 
+  // If org_id is not set in session (e.g., user logged in without org context),
+  // use the first organization as the current org
+  const currentOrgId = session.user.org_id || orgs[0]?.id
+
+  // If still no org found, redirect to onboarding
+  if (!currentOrgId) {
+    redirect("/onboarding/create")
+  }
+
   return (
     <Auth0Provider>
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-2 py-4 sm:px-8">
@@ -42,7 +51,7 @@ export default async function DashboardLayout({
               displayName: o.display_name!,
               logoUrl: o.branding?.logo_url,
             }))}
-            currentOrgId={session.user.org_id!}
+            currentOrgId={currentOrgId}
           />
 
           <Link

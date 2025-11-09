@@ -1,0 +1,27 @@
+runtime: nodejs20
+env: flex
+
+env_variables:
+  NODE_ENV: production
+  NEXT_TELEMETRY_DISABLED: 1
+  # Note: For production, use Secret Manager instead of hardcoding values
+  # These will be set via environment variables or Secret Manager
+
+automatic_scaling:
+  min_num_instances: 1
+  max_num_instances: 10
+  cpu_utilization:
+    target_utilization: 0.6
+
+resources:
+  cpu: 1
+  memory_gb: 1
+  disk_size_gb: 10
+
+health_check:
+  enable_health_check: true
+  check_interval_sec: 5
+  timeout_sec: 4
+  unhealthy_threshold: 2
+  healthy_threshold: 2
+  restart_threshold: 3
