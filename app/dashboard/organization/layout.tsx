@@ -57,12 +57,15 @@ export default async function AccountLayout({ children }: AccountLayoutProps) {
       roleClaimType: typeof session.user[ROLES_CLAIM_KEY],
       roleClaimIsArray: Array.isArray(session.user[ROLES_CLAIM_KEY]),
       userRole,
+      isAdmin: userRole === "admin",
       allUserKeys: Object.keys(session.user),
       adminRoleId: process.env.AUTH0_ADMIN_ROLE_ID,
       memberRoleId: process.env.AUTH0_MEMBER_ROLE_ID,
+      customClaimsNamespace: process.env.CUSTOM_CLAIMS_NAMESPACE,
     })
   }
 
+  // Strict check: only allow "admin" role
   if (userRole !== "admin") {
     return (
       <div className="flex items-center justify-center">

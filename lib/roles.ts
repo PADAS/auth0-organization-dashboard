@@ -10,37 +10,34 @@ export const roles = {
 export type Role = keyof typeof roles
 
 export function getRole(user: User) {
-  // we only allow a single role to be assigned to a user
   const roleClaim = user[ROLES_CLAIM_KEY]
   
   // Handle different claim formats
-  let role: string | undefined
+  let rolesArray: string[] = []
   
   if (Array.isArray(roleClaim)) {
-    // If it's an array, get the first element
-    role = roleClaim[0]
+    // If it's an array, use all elements
+    rolesArray = roleClaim.filter((r) => typeof r === "string")
   } else if (typeof roleClaim === "string") {
-    // If it's a string directly, use it
-    role = roleClaim
-  } else if (roleClaim && typeof roleClaim === "object") {
-    // If it's an object (shouldn't happen, but handle it)
-    role = undefined
+    // If it's a string directly, treat it as a single role
+    rolesArray = [roleClaim]
   }
 
-  // if no role is assigned, set them to the default member role
-  if (!role || typeof role !== "string") {
+  // if no roles are assigned, set them to the default member role
+  if (rolesArray.length === 0) {
     return "member"
   }
 
-  // Normalize the role name (trim whitespace, lowercase for comparison)
-  const normalizedRole = role.trim().toLowerCase()
+  // Normalize all role names (trim whitespace, lowercase for comparison)
+  const normalizedRoles = rolesArray.map((r) => r.trim().toLowerCase())
 
   // Auth0's event.authorization.roles contains role names (e.g., "admin", "member")
-  // not role IDs, so we can check the role name directly
-  if (normalizedRole === "admin") {
+  // If the user has the "admin" role anywhere in their roles, they are an admin
+  // This handles cases where a user might have both "member" and "admin" roles
+  if (normalizedRoles.includes("admin")) {
     return "admin"
   }
 
-  // Default to member for any other role or if role is "member"
+  // Default to member if no admin role is found
   return "member"
 }
