@@ -3,22 +3,22 @@ APP_BASE_URL=http://localhost:3000
 # Global Auth0 SDK configuration
 NEXT_PUBLIC_AUTH0_DOMAIN=earthranger-dev.us.auth0.com
 AUTH0_MANAGEMENT_API_DOMAIN=earthranger-dev.us.auth0.com
-SESSION_ENCRYPTION_SECRET=d6f27926dd3aabf92149f9ec1d52dcda4add73e53d70f06d63ff09b6b8a4e4bb
+SESSION_ENCRYPTION_SECRET=***REMOVED***
 
 # Client ID and secret for the application within the context of an organization
-AUTH0_CLIENT_ID=HpX0T6YT2Zm4mPPM0XvaE03nRD87MMMg
-AUTH0_CLIENT_SECRET=ehfvcCrRVba5tJ957tq0ZxwaikJnD4xeR2UBS4sR3t9PPy41FaJn8XyJH8OYGA00
+AUTH0_CLIENT_ID=***REMOVED***
+AUTH0_CLIENT_SECRET=***REMOVED***
 
 # Client ID and secret for the application used to allow a user to manage organizations
-AUTH0_MANAGEMENT_CLIENT_ID=TEsD9hIOzsKQ7NZH0p3Vxv2dX7M6Ca2j
-AUTH0_MANAGEMENT_CLIENT_SECRET=TqpgbtyOpATQciqLanIJtNRfErd20xoIcQbFSYCzX_k0u1AYiuwU2JalmSLnC-ZH
+AUTH0_MANAGEMENT_CLIENT_ID=***REMOVED***
+AUTH0_MANAGEMENT_CLIENT_SECRET=***REMOVED***-ZH
 
 # Roles assigned to the members of an organization
-AUTH0_ADMIN_ROLE_ID=rol_4u1l5eUGeFizgWlx
-AUTH0_MEMBER_ROLE_ID=rol_8LKOlZwuihwKdtJm
+AUTH0_ADMIN_ROLE_ID=***REMOVED***
+AUTH0_MEMBER_ROLE_ID=***REMOVED***
 
 # The default connection ID users will use to create an account with during onboarding
-DEFAULT_CONNECTION_ID=con_cJvmoSl8WspwhXwv
+DEFAULT_CONNECTION_ID=***REMOVED***
 
 # The namespace used to prefix custom claims
 CUSTOM_CLAIMS_NAMESPACE=https://example.com
