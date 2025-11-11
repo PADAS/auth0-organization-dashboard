@@ -30,9 +30,39 @@ export const createInvitation = withServerActionAuth(
       }
     }
 
+    const roleId = roles[role]
+    const orgId = await getOrgIdFromSession(session)
+
+    const { data: existingUsers } =
+      await managementClient.usersByEmail.getByEmail({
+        email,
+        // Optional helpers:
+        // fields: 'user_id,email',
+        // include_fields: true,
+      })
+
+    if (existingUsers.length > 0) {
+      const existingUser = existingUsers[0];
+      // Add existing user to org
+      await managementClient.organizations.addMembers(
+        { id: orgId },
+        { members: [existingUser.user_id] }
+      )
+
+      if (roleId) {
+        await managementClient.organizations.addMemberRoles(
+          { id: orgId, user_id: existingUser.user_id },
+          { roles: [roleId] }
+        )
+      }
+
+      return {}
+    }
+
+    
     try {
-      const roleId = roles[role]
-      const orgId = await getOrgIdFromSession(session)
+      // const roleId = roles[role]
+      // const orgId = await getOrgIdFromSession(session)
 
       await managementClient.organizations.createInvitation(
         {

@@ -73,13 +73,13 @@ for secret in "${SECRETS[@]}"; do
     fi
 done
 
-# If secrets are missing, try to create them from .env.local
+# If secrets are missing, try to create them from .env.dev
 if [ ${#MISSING_SECRETS[@]} -gt 0 ]; then
     echo -e "\n${YELLOW}⚠️  Missing ${#MISSING_SECRETS[@]} required secret(s).${NC}"
     
-    if [ -f ".env.local" ]; then
-        echo -e "${GREEN}📄 Found .env.local file. Attempting to create missing secrets...${NC}"
-        source .env.local
+    if [ -f ".env.dev" ]; then
+        echo -e "${GREEN}📄 Found .env.dev file. Attempting to create missing secrets...${NC}"
+        source .env.dev
         
         for secret in "${MISSING_SECRETS[@]}"; do
             case ${secret} in
@@ -138,8 +138,8 @@ if [ ${#MISSING_SECRETS[@]} -gt 0 ]; then
         done
         echo -e "\n${YELLOW}To create these secrets, run:${NC}"
         echo -e "${YELLOW}  echo -n \"your-value\" | gcloud secrets create <secret-name> --data-file=-${NC}"
-        echo -e "\n${YELLOW}Or create them from your .env.local file:${NC}"
-        echo -e "${YELLOW}  source .env.local${NC}"
+        echo -e "\n${YELLOW}Or create them from your .env.dev file:${NC}"
+        echo -e "${YELLOW}  source .env.dev${NC}"
         echo -e "${YELLOW}  echo -n \"\${AUTH0_CLIENT_ID}\" | gcloud secrets create auth0-client-id --data-file=-${NC}"
         echo -e "${YELLOW}  # ... repeat for other secrets${NC}"
         exit 1

@@ -3,6 +3,7 @@
 import { SessionData } from "@auth0/nextjs-auth0/types"
 
 import { verifyDnsRecords } from "@/lib/domain-verification"
+import { getOrgIdFromSession } from "@/lib/get-current-org"
 import { withServerActionAuth } from "@/lib/with-server-action-auth"
 
 export const verifyDomain = withServerActionAuth(
@@ -13,8 +14,11 @@ export const verifyDomain = withServerActionAuth(
       }
     }
 
+    const normalizedDomain = domain.trim().toLowerCase()
+
     try {
-      const verified = await verifyDnsRecords(domain, session.user.org_id!)
+      const orgId = await getOrgIdFromSession(session)
+      const verified = await verifyDnsRecords(normalizedDomain, orgId)
 
       return { verified }
     } catch (error) {
