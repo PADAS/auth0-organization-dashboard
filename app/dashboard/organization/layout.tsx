@@ -74,7 +74,7 @@ export default async function AccountLayout({ children }: AccountLayoutProps) {
             <CardTitle>Unauthorized</CardTitle>
             <div className="space-y-1.5 text-sm text-muted-foreground">
               <p>
-                You're currently logged in with the role of{" "}
+                You&apos;re currently logged in with the role of{" "}
                 <span className="font-semibold">{userRole}</span>.
               </p>
               <p>
