@@ -6,6 +6,7 @@ import { SessionData } from "@auth0/nextjs-auth0/types"
 import slugify from "@sindresorhus/slugify"
 
 import { managementClient } from "@/lib/auth0"
+import { getOrgIdFromSession } from "@/lib/get-current-org"
 import { verifyDnsRecords } from "@/lib/domain-verification"
 import { withServerActionAuth } from "@/lib/with-server-action-auth"
 
@@ -64,9 +65,11 @@ export const createConnection = withServerActionAuth(
         ? domainAliases.split(",").map((d) => d.trim())
         : []
 
+    const orgId = await getOrgIdFromSession(session)
+
     // ensure that the domains are verified
     for (const domain of parsedDomains) {
-      const verified = await verifyDnsRecords(domain, session.user.org_id!)
+      const verified = await verifyDnsRecords(domain, orgId)
 
       if (!verified) {
         return {
@@ -94,7 +97,7 @@ export const createConnection = withServerActionAuth(
       })
 
       await managementClient.organizations.addEnabledConnection(
-        { id: session.user.org_id! },
+        { id: orgId },
         {
           connection_id: connection.id,
           assign_membership_on_login:
@@ -126,10 +129,12 @@ export const deleteConnection = withServerActionAuth(
     }
 
     try {
+      const orgId = await getOrgIdFromSession(session)
+      
       // ensure that the connection being removed belongs to the organization
       const { data: connection } =
         await managementClient.organizations.getEnabledConnection({
-          id: session.user.org_id!,
+          id: orgId,
           connectionId,
         })
 

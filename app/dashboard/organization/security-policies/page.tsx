@@ -1,13 +1,14 @@
-import { appClient, managementClient } from "@/lib/auth0"
+import { managementClient } from "@/lib/auth0"
+import { getCurrentOrgId } from "@/lib/get-current-org"
 import { DEFAULT_MFA_POLICY } from "@/lib/mfa-policy"
 import { PageHeader } from "@/components/page-header"
 
 import { MfaPolicyForm } from "./mfa-policy-form"
 
 export default async function SecurityPolicies() {
-  const session = await appClient.getSession()
+  const currentOrgId = await getCurrentOrgId()
   const { data: org } = await managementClient.organizations.get({
-    id: session!.user.org_id!,
+    id: currentOrgId,
   })
 
   return (

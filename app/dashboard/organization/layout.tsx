@@ -45,23 +45,44 @@ export default async function AccountLayout({ children }: AccountLayoutProps) {
     redirect("/auth/login")
   }
 
-  if (getRole(session.user) !== "admin") {
+  const userRole = getRole(session.user)
+  
+  // Debug: log role information (remove in production)
+  if (process.env.NODE_ENV === "development") {
+    const ROLES_CLAIM_KEY = `${process.env.CUSTOM_CLAIMS_NAMESPACE}/roles`
+    console.log("Role check debug:", {
+      userId: session.user.sub,
+      email: session.user.email,
+      roleClaim: session.user[ROLES_CLAIM_KEY],
+      roleClaimType: typeof session.user[ROLES_CLAIM_KEY],
+      roleClaimIsArray: Array.isArray(session.user[ROLES_CLAIM_KEY]),
+      userRole,
+      isAdmin: userRole === "admin",
+      allUserKeys: Object.keys(session.user),
+      adminRoleId: process.env.AUTH0_ADMIN_ROLE_ID,
+      memberRoleId: process.env.AUTH0_MEMBER_ROLE_ID,
+      customClaimsNamespace: process.env.CUSTOM_CLAIMS_NAMESPACE,
+    })
+  }
+
+  // Strict check: only allow "admin" role
+  if (userRole !== "admin") {
     return (
       <div className="flex items-center justify-center">
         <Card className="w-[450px]">
           <CardHeader>
             <CardTitle>Unauthorized</CardTitle>
-            <CardDescription className="space-y-1.5">
+            <div className="space-y-1.5 text-sm text-muted-foreground">
               <p>
-                You’re currently logged in with the role of{" "}
-                <span className="font-semibold">{getRole(session.user)}</span>.
+                You&apos;re currently logged in with the role of{" "}
+                <span className="font-semibold">{userRole}</span>.
               </p>
               <p>
                 Log in as an Organization member with the{" "}
                 <span className="font-semibold">admin</span> role to manage your
                 Organization&apos;s settings.
               </p>
-            </CardDescription>
+            </div>
           </CardHeader>
           <CardFooter>
             <Link href="/dashboard" className="w-full">

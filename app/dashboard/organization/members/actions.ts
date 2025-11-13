@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache"
 import { SessionData } from "@auth0/nextjs-auth0/types"
 
 import { managementClient } from "@/lib/auth0"
+import { getOrgIdFromSession } from "@/lib/get-current-org"
 import { Role, roles } from "@/lib/roles"
 import { withServerActionAuth } from "@/lib/with-server-action-auth"
 
@@ -29,12 +30,43 @@ export const createInvitation = withServerActionAuth(
       }
     }
 
+    const roleId = roles[role]
+    const orgId = await getOrgIdFromSession(session)
+
+    const { data: existingUsers } =
+      await managementClient.usersByEmail.getByEmail({
+        email,
+        // Optional helpers:
+        // fields: 'user_id,email',
+        // include_fields: true,
+      })
+
+    if (existingUsers.length > 0) {
+      const existingUser = existingUsers[0];
+      // Add existing user to org
+      await managementClient.organizations.addMembers(
+        { id: orgId },
+        { members: [existingUser.user_id] }
+      )
+
+      if (roleId) {
+        await managementClient.organizations.addMemberRoles(
+          { id: orgId, user_id: existingUser.user_id },
+          { roles: [roleId] }
+        )
+      }
+
+      return {}
+    }
+
+    
     try {
-      const roleId = roles[role]
+      // const roleId = roles[role]
+      // const orgId = await getOrgIdFromSession(session)
 
       await managementClient.organizations.createInvitation(
         {
-          id: session.user.org_id!,
+          id: orgId,
         },
         {
           invitee: {
@@ -68,8 +100,9 @@ export const createInvitation = withServerActionAuth(
 export const revokeInvitation = withServerActionAuth(
   async function revokeInvitation(invitationId: string, session: SessionData) {
     try {
+      const orgId = await getOrgIdFromSession(session)
       await managementClient.organizations.deleteInvitation({
-        id: session.user.org_id!,
+        id: orgId,
         invitation_id: invitationId,
       })
 
@@ -97,9 +130,10 @@ export const removeMember = withServerActionAuth(
     }
 
     try {
+      const orgId = await getOrgIdFromSession(session)
       await managementClient.organizations.deleteMembers(
         {
-          id: session.user.org_id!,
+          id: orgId,
         },
         {
           members: [userId],
@@ -142,9 +176,10 @@ export const updateRole = withServerActionAuth(
     const roleId = roles[role]
 
     try {
+      const orgId = await getOrgIdFromSession(session)
       const { data: currentRoles } =
         await managementClient.organizations.getMemberRoles({
-          id: session.user.org_id!,
+          id: orgId,
           user_id: userId,
         })
 
@@ -152,7 +187,7 @@ export const updateRole = withServerActionAuth(
       if (currentRoles.length) {
         await managementClient.organizations.deleteMemberRoles(
           {
-            id: session.user.org_id!,
+            id: orgId,
             user_id: userId,
           },
           {
@@ -165,7 +200,7 @@ export const updateRole = withServerActionAuth(
       if (roleId) {
         await managementClient.organizations.addMemberRoles(
           {
-            id: session.user.org_id!,
+            id: orgId,
             user_id: userId,
           },
           {

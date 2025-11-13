@@ -1,4 +1,5 @@
-import { appClient, managementClient } from "@/lib/auth0"
+import { managementClient } from "@/lib/auth0"
+import { getCurrentOrgId } from "@/lib/get-current-org"
 import { Role } from "@/lib/roles"
 import { PageHeader } from "@/components/page-header"
 
@@ -7,15 +8,42 @@ import { InvitationsList } from "./invitations-list"
 import { MembersList } from "./members-list"
 
 export default async function Members() {
-  const session = await appClient.getSession()
+  const currentOrgId = await getCurrentOrgId()
+  
   const { data: members } = await managementClient.organizations.getMembers({
-    id: session!.user.org_id!,
-    fields: ["user_id", "name", "email", "picture", "roles"].join(","),
+    id: currentOrgId,
+    fields: ["user_id", "name", "email", "picture"].join(","),
     include_fields: true,
   })
+
+  const adminRoleId = process.env.AUTH0_ADMIN_ROLE_ID
+
+  const membersWithRoles = await Promise.all(
+    members.map(async (member) => {
+      const { data: memberRoles } =
+        await managementClient.organizations.getMemberRoles({
+          id: currentOrgId,
+          user_id: member.user_id,
+        })
+
+      const isAdmin = Boolean(
+        adminRoleId && memberRoles.some((role) => role.id === adminRoleId)
+      )
+
+      const role: Role = isAdmin ? "admin" : "member"
+
+      return {
+        id: member.user_id,
+        name: member.name,
+        email: member.email,
+        picture: member.picture,
+        role,
+      }
+    })
+  )
   const { data: invitations } =
     await managementClient.organizations.getInvitations({
-      id: session!.user.org_id!,
+      id: currentOrgId,
     })
 
   return (
@@ -25,15 +53,7 @@ export default async function Members() {
         description="Manage the members of the organization."
       />
 
-      <MembersList
-        members={members.map((m) => ({
-          id: m.user_id,
-          name: m.name,
-          email: m.email,
-          picture: m.picture,
-          role: ((m.roles && m.roles[0]?.name) || "member") as Role,
-        }))}
-      />
+      <MembersList members={membersWithRoles} />
 
       <InvitationsList
         invitations={invitations.map((i) => ({

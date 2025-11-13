@@ -1,0 +1,24 @@
+APP_BASE_URL=http://localhost:3000
+
+# Global Auth0 SDK configuration
+NEXT_PUBLIC_AUTH0_DOMAIN=earthranger-dev.us.auth0.com
+AUTH0_MANAGEMENT_API_DOMAIN=earthranger-dev.us.auth0.com
+SESSION_ENCRYPTION_SECRET=***REMOVED***
+
+# Client ID and secret for the application within the context of an organization
+AUTH0_CLIENT_ID=***REMOVED***
+AUTH0_CLIENT_SECRET=***REMOVED***
+
+# Client ID and secret for the application used to allow a user to manage organizations
+AUTH0_MANAGEMENT_CLIENT_ID=***REMOVED***
+AUTH0_MANAGEMENT_CLIENT_SECRET=***REMOVED***-ZH
+
+# Roles assigned to the members of an organization
+AUTH0_ADMIN_ROLE_ID=***REMOVED***
+AUTH0_MEMBER_ROLE_ID=***REMOVED***
+
+# The default connection ID users will use to create an account with during onboarding
+DEFAULT_CONNECTION_ID=***REMOVED***
+
+# The namespace used to prefix custom claims
+CUSTOM_CLAIMS_NAMESPACE=https://example.com
